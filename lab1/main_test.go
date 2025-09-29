@@ -47,12 +47,12 @@ func TestGeneratePermutedAlphabet(t *testing.T) {
 		{
 			name:     "Standard Example from PDF",
 			keyword:  "cryptography",
-			expected: "CRYPTOGAHBDEFIJKMLNQSUVWXZ",
+			expected: "CRYPTOGAHBDEFIJKLMNQSUVWXZ",
 		},
 		{
 			name:     "Keyword with repeated letters",
 			keyword:  "hello",
-			expected: "HELOABCDFGHIJKMNPQRSTUVWXZ",
+			expected: "HELOABCDFGIJKMNPQRSTUVWXYZ",
 		},
 		{
 			name:     "Full alphabet as keyword",
