@@ -1,0 +1,170 @@
+% Created 2025-09-29 Mon 16:34
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\input{lab_pre}
+\group{FAF--233}
+\prof{The Prof}
+\profdep{sea, fcim utm}
+\labno{5}
+
+%% ox-latex features:
+%   !announce-start, !guess-pollyglossia, !guess-babel, !guess-inputenc,
+%   maths, !announce-end.
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% end ox-latex features
+
+
+\author{Andrei Chicu}
+\date{\today}
+\title{Cifrul lui Cezar: Implementare și Extensie}
+\hypersetup{
+ pdfauthor={Andrei Chicu},
+ pdftitle={Cifrul lui Cezar: Implementare și Extensie},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 30.2 (Org mode 9.8-pre)},
+ pdflang={English}}
+\begin{document}
+
+\makeatletter
+\begin{titlepage}
+\centering
+
+\includegraphics[height=2cm]{utm_logo.png}
+
+\bfseries
+\textsc{Ministry of Education and Research of Republic of Moldova} \\
+\textsc{Technical University of Moldova} \\
+\textsc{Faculty of Computers, Informatics and Microelectronics} \\
+\textsc{Department of Software and Automation Engineering} \\
+\mdseries
+
+\vfill
+
+\textsc{\Large Analysis of Algorithms} \\
+\textsc{\large Laboratory work \#\@labno}\\[0.5cm]
+
+\vspace{12pt}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\HRule \\[0.2cm]
+{ \LARGE \bfseries \@title }\\[0.4cm]
+\HRule
+\vfill
+
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:} \\
+\@author\\                        
+std. gr. \@group
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}[t]{0.4\textwidth}
+\raggedleft \large
+\emph{Verified:} \\
+\@prof \\
+Department of \textsc{\@profdep}
+\end{minipage}\\[3cm]
+\vfill
+
+Chișinău, 2025
+\end{titlepage}
+\makeatother
+\setcounter{page}{2}
+\section{Introduction}
+\label{sec:org285a67a}
+github url: \url{https://github.com/...}
+\subsection{Objective}
+\label{sec:orgf6ae595}
+The objective of this laboratory work is to implement the Caesar Cipher algorithm, covering both the standard fixed-shift version and an extended version that uses a keyword to permute the alphabet, significantly increasing the cipher's key space and cryptoresistance.
+\subsection{Tasks}
+\label{sec:orgddf626c}
+\begin{itemize}
+\item Task 1.1: Standard Caesar Cipher (Single Key \(k_{1}\))
+\item Task 1.2: Permutation Caesar Cipher (Two Keys \(k_{1}\) and k\(_{2}\)​)
+\item Task 1.3: Cipher Verification (Exchange and Decrypt)
+\end{itemize}
+\subsection{Theoretical Notes}
+\label{sec:org790f330}
+The standard Caesar cipher uses the formulas:
+\begin{itemize}
+\item Encryption: \(ck(x)=(x+k)(mod n)\)
+\item Decryption: \(mk(y)=(y−k)(mod n)\) where \(n=26\) for the English alphabet and the shift key \(k \in{1,2,…,25}\).
+\item The permutation cipher modifies this by using a new alphabet sequence defined \\
+by the keyword \(k_{2}\).
+\end{itemize}
+\subsection{Task 1.1: Standard Caesar Cipher (Single Key)}
+\label{sec:orgbc3873b}
+
+\subsubsection{Implementation Details}
+\label{sec:org702c33d}
+The standard Caesar Cipher implementation uses a single integer key, \(k_{1}\), for the shift.
+\begin{enumerate}
+\item Key and Text Validation
+\label{sec:org536bd7f}
+
+\texttt{getShiftKey}: Validates that the shift key \(k_{1}\) is an integer in the range \([1,25]\).
+
+\texttt{sanitizeText}: Ensures the input plaintext is converted to uppercase and all non-letter characters (including spaces) are removed.
+\item Cipher Logic
+\label{sec:orgdf83abf}
+The core logic resides in the \texttt{processText} function, which uses the constant \texttt{alphabet}
+The encryption/decryption is achieved by calculating the index of the new character using modular arithmetic:
+\begin{itemize}
+\item Find the index of the character x in the standard alphabet.
+\item For encryption, calculate \texttt{(index+k)(mod 26)}.
+\item For decryption, calculate \texttt{(index-k)(mod 26)}. The result is adjusted to ensure it remains positive (e.g., \texttt{(index-k+26)(mod 26)}).
+\end{itemize}
+\end{enumerate}
+\subsection{Task 1.2: Permutation Caesar Cipher (Two Keys)}
+\label{sec:orgf5a0cc6}
+
+\subsubsection{Implementation Details}
+\label{sec:org4a46120}
+This extended cipher uses a shift key \(k_{1}\) (integer) and a permutation key \(k_{2}\) (keyword string).
+\begin{enumerate}
+\item Key Validation
+\label{sec:org8b29791}
+\texttt{getPermutationKey}: Validates the permutation keyword \(k_{2}\):
+\begin{itemize}
+\item Must be composed only of letters.
+\item Must have a minimum length of 7 characters.
+\end{itemize}
+\item Permuted Alphabet Generation
+\label{sec:org431c71d}
+The \texttt{generatePermutedAlphabet} function is responsible for creating the new alphabet based on \(k_{2}\):
+The keyword \(k_{2}\) is sanitized and uppercased.
+Unique letters from \(k_{2}\) are appended to the new alphabet in the order they first appear (duplicates are excluded).
+The remaining letters of the standard alphabet (A-Z) that were not in the keyword are appended in their natural order.
+
+\textbf{Example:} For \(k_{2}="cryptography"\), the permuted alphabet is \texttt{CRYPTOGAHBDEFIJKMLNQSUVWXZ}.
+\item Cipher Logic
+\label{sec:org3018471}
+The same \texttt{processText} function is reused, but it now operates on the permuted alphabet string instead of the standard one. The indices are mapped based on the position within this new 26-character sequence.
+\end{enumerate}
+\subsection{Task 1.3: Cipher Verification}
+\label{sec:orgb621f53}
+
+\subsubsection{Implementation Details}
+\label{sec:org7369653}
+This task verifies the practical application of the Permutation Caesar Cipher through a peer exchange.
+\begin{enumerate}
+\item Exchange Results
+\label{sec:orgceaa041}
+\end{enumerate}
+\subsection{Conclusions}
+\label{sec:org61aee32}
+The laboratory work successfully implemented the Caesar Cipher and its extension. The use of a permutation keyword significantly complicates an exhaustive key search compared to the standard version, although the cipher remains vulnerable to frequency analysis. All requirements regarding text sanitization (uppercase, no non-letters) and key validation (\(k_{1}\in[1,25], len(k_{2})\ge7\)) were met in the Go implementation.
+\end{document}

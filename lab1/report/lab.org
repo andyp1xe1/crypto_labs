@@ -1,0 +1,76 @@
+#+title: Cifrul lui Cezar: Implementare și Extensie
+#+author: Andrei Chicu
+#+OPTIONS: title:nil toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \input{lab_pre}
+#+LATEX_HEADER: \group{FAF--233}
+#+LATEX_HEADER: \prof{Zaica, laborant}
+#+LATEX_HEADER: \profdep{sea, fcim utm}
+#+LATEX_HEADER: \labno{1}
+#+INCLUDE: "lab_titlepage.tex" export latex
+#+PROPERTY: HEADER-ARGS+ :eval no-export
+* Introduction
+github url: \url{https://github.com/...}
+** Objective
+The objective of this laboratory work is to implement the Caesar Cipher algorithm, covering both the standard fixed-shift version and an extended version that uses a keyword to permute the alphabet, significantly increasing the cipher's key space and cryptoresistance.
+
+** Tasks
+- Task 1.1: Standard Caesar Cipher (Single Key \(k_{1}\))
+- Task 1.2: Permutation Caesar Cipher (Two Keys \(k_{1}\) and k$_{2}$​)
+- Task 1.3: Cipher Verification (Exchange and Decrypt)
+
+** Theoretical Notes
+The standard Caesar cipher uses the formulas:
+- Encryption: \(ck(x)=(x+k)(mod n)\)
+- Decryption: \(mk(y)=(y−k)(mod n)\) where \(n=26\) for the English alphabet and the shift key \(k \in{1,2,…,25}\).
+- The permutation cipher modifies this by using a new alphabet sequence defined \\
+  by the keyword \(k_{2}\).
+
+** Task 1.1: Standard Caesar Cipher (Single Key)
+
+*** Implementation Details
+The standard Caesar Cipher implementation uses a single integer key, \(k_{1}\), for the shift.
+
+**** Key and Text Validation
+
+=getShiftKey=: Validates that the shift key \(k_{1}\) is an integer in the range \([1,25]\).
+
+=sanitizeText=: Ensures the input plaintext is converted to uppercase and all non-letter characters (including spaces) are removed.
+
+**** Cipher Logic
+The core logic resides in the =processText= function, which uses the constant =alphabet=
+The encryption/decryption is achieved by calculating the index of the new character using modular arithmetic:
+- Find the index of the character x in the standard alphabet.
+- For encryption, calculate =(index+k)(mod 26)=.
+- For decryption, calculate =(index-k)(mod 26)=. The result is adjusted to ensure it remains positive (e.g., =(index-k+26)(mod 26)=).
+
+** Task 1.2: Permutation Caesar Cipher (Two Keys)
+
+*** Implementation Details
+This extended cipher uses a shift key \(k_{1}\) (integer) and a permutation key \(k_{2}\) (keyword string).
+
+**** Key Validation
+=getPermutationKey=: Validates the permutation keyword \(k_{2}\):
+- Must be composed only of letters.
+- Must have a minimum length of 7 characters.
+
+**** Permuted Alphabet Generation
+The =generatePermutedAlphabet= function is responsible for creating the new alphabet based on \(k_{2}\):
+The keyword \(k_{2}\) is sanitized and uppercased.
+Unique letters from \(k_{2}\) are appended to the new alphabet in the order they first appear (duplicates are excluded).
+The remaining letters of the standard alphabet (A-Z) that were not in the keyword are appended in their natural order.
+
+*Example:* For \(k_{2}="cryptography"\), the permuted alphabet is =CRYPTOGAHBDEFIJKMLNQSUVWXZ=.
+
+**** Cipher Logic
+The same =processText= function is reused, but it now operates on the permuted alphabet string instead of the standard one. The indices are mapped based on the position within this new 26-character sequence.
+
+** Task 1.3: Cipher Verification
+
+*** Implementation Details
+This task verifies the practical application of the Permutation Caesar Cipher through a peer exchange.
+
+**** Exchange Results
+** Conclusions
+ The laboratory work successfully implemented the Caesar Cipher and its extension. The use of a permutation keyword significantly complicates an exhaustive key search compared to the standard version, although the cipher remains vulnerable to frequency analysis. All requirements regarding text sanitization (uppercase, no non-letters) and key validation (\(k_{1}\in[1,25], len(k_{2})\ge7\)) were met in the Go implementation.
