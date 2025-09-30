@@ -1,0 +1,21 @@
+#+title: The Title
+#+author: Amazing Dude
+#+OPTIONS: title:nil toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \input{lab_pre}
+#+LATEX_HEADER: \labsubject{The Subject}
+#+LATEX_HEADER: \group{XDD-123}
+#+LATEX_HEADER: \prof{Nujabes}
+#+LATEX_HEADER: \profdep{sea, fcim utm}
+#+LATEX_HEADER: \labno{1}
+#+INCLUDE: "lab_titlepage.tex" export latex
+#+PROPERTY: HEADER-ARGS+ :eval no-export
+* Introduction
+github url: \url{https://github.com/...}
+** Objective
+** Tasks
+** Theoretical Notes
+* Implementation
+* Results
+* Conclusions

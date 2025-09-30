@@ -1,0 +1,35 @@
+%\documentclass[12pt]{article}
+\usepackage{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times} % Times New Roman font
+\usepackage{setspace}
+\usepackage[pdftex]{graphicx}
+
+\usepackage{hyperref}
+
+% Set line spacing to 1.5
+\setstretch{1.5}
+
+\geometry{a4paper, portrait, margin=0.7in, nohead}
+
+\usepackage{titlesec}
+\titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}[block]{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\makeatletter
+
+\newcommand{\student}[1]{\author{#1}}
+
+\newcommand{\group}[1]{\def\@group{#1}}
+
+\newcommand{\prof}[1]{\def\@prof{#1}}
+\newcommand{\profdep}[1]{\def\@profdep{#1}}
+
+\newcommand{\labno}[1]{\def\@labno{#1}}
+
+\newcommand{\labtopic}[1]{\title{#1}}
+\newcommand{\labsubject}[1]{\def\@labsubject{#1}}
