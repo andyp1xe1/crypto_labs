@@ -1,21 +1,172 @@
-#+title: The Title
-#+author: Amazing Dude
+
+#+title: Cryptanalysis of Monoalphabetic Ciphers 
+#+author: Andrei Chicu
 #+OPTIONS: title:nil toc:nil
 #+LATEX_CLASS: article
 #+LATEX_CLASS_OPTIONS: [a4paper,12pt]
 #+LATEX_HEADER: \input{lab_pre}
 #+LATEX_HEADER: \labsubject{The Subject}
-#+LATEX_HEADER: \group{XDD-123}
-#+LATEX_HEADER: \prof{Nujabes}
+#+LATEX_HEADER: \group{faf-233}
+#+LATEX_HEADER: \prof{Zaica, asist. univ.}
 #+LATEX_HEADER: \profdep{sea, fcim utm}
-#+LATEX_HEADER: \labno{1}
+#+LATEX_HEADER: \labno{2}
 #+INCLUDE: "lab_titlepage.tex" export latex
 #+PROPERTY: HEADER-ARGS+ :eval no-export
 * Introduction
-github url: \url{https://github.com/...}
+github url: \url{https://github.com/andyp1xe1/crypto_labs}
 ** Objective
+To analyze and decrypt a monoalphabetic substitution cipher using frequency analysis techniques, demonstrating the practical application of statistical cryptanalysis methods.
+
 ** Tasks
+An encrypted message was intercepted that is known to have been obtained using a monoalphabetic cipher. Apply the frequency analysis attack to find the original message, assuming that it is a text written in English. Only the letters were encrypted, while other characters remained unencrypted.
+
 ** Theoretical Notes
-* Implementation
+Monoalphabetic substitution ciphers represent one of the oldest forms of cryptographic systems, where each letter of the plaintext is consistently replaced with another letter throughout the entire message. Despite their historical significance, these ciphers possess fundamental weaknesses that make them vulnerable to systematic cryptanalytic attacks.
+
+The primary weakness lies in the preservation of letter frequency patterns from the original language. In English, certain letters appear with characteristic frequencies - 'E' being the most common at approximately 12.7%, followed by 'T' at 9.06%, and 'A' at 8.17%. This frequency distribution remains relatively stable across different texts of sufficient length.
+
+Frequency analysis exploits this statistical property by examining the distribution of symbols in the ciphertext and correlating them with expected English letter frequencies. The methodology involves several key principles:
+
+1. *Statistical correlation*: Mapping the most frequent cipher symbols to the most common English letters
+2. *Pattern recognition*: Identifying common digraphs (TH, HE, AN, IN, ER) and trigraphs (THE, AND, THA, ENT, ION)
+3. *Contextual analysis*: Using partial decryption results to identify complete words and validate substitutions
+4. *Double letter identification*: Recognizing patterns where the same letter appears consecutively (SS, EE, TT, OO, FF)
+
+The process requires both computational analysis and human intuition, as perfect frequency matches are rare in practice. The cryptanalyst must consider context, common English words, and linguistic patterns to make educated substitution decisions. This combination of statistical analysis and linguistic knowledge makes frequency analysis a powerful tool against monoalphabetic ciphers.
+* Process
+The cryptanalysis process followed the established methodology for frequency analysis attacks, combining computational analysis with pattern recognition techniques.
+
+** Encrypted Message
+The intercepted message contained the following ciphertext:
+
+#+INCLUDE: "../message.txt"
+
+** Initial Analysis
+The encrypted message contained 3,694 letters total. Using a Go program, I calculated the frequency distribution of each letter in the ciphertext and compared it with standard English letter frequencies.
+
+#+NAME: complete-frequency-table
+| Rank | Cipher Letter | Count | Message % | English Letter | Expected % | Difference |
+|------+---------------+-------+-----------+----------------+------------+------------|
+|    1 | V             |   434 |     11.75 | E              |      12.70 |     -0.95  |
+|    2 | W             |   356 |      9.64 | T              |       9.06 |     +0.58  |
+|    3 | T             |   305 |      8.26 | A              |       8.17 |     +0.09  |
+|    4 | X             |   295 |      7.99 | I              |       6.97 |     +1.02  |
+|    5 | P             |   263 |      7.12 | S              |       6.33 |     +0.79  |
+|    6 | G             |   262 |      7.09 | N              |       6.75 |     +0.34  |
+|    7 | N             |   257 |      6.96 | R              |       5.99 |     +0.97  |
+|    8 | I             |   229 |      6.20 | H              |       6.09 |     +0.11  |
+|    9 | Q             |   169 |      4.57 | L              |       4.03 |     +0.54  |
+|   10 | O             |   153 |      4.14 | D              |       4.25 |     -0.11  |
+|   11 | S             |   148 |      4.01 | C              |       2.78 |     +1.23  |
+|   12 | H             |   148 |      4.01 | U              |       2.76 |     +1.25  |
+|   13 | U             |    89 |      2.41 | M              |       2.41 |      0.00  |
+|   14 | Z             |    88 |      2.38 | F              |       2.23 |     +0.15  |
+|   15 | D             |    86 |      2.33 | W              |       2.36 |     -0.03  |
+|   16 | C             |    78 |      2.11 | Y              |       1.97 |     +0.14  |
+|   17 | F             |    75 |      2.03 | P              |       1.93 |     +0.10  |
+|   18 | R             |    63 |      1.71 | B              |       1.49 |     +0.22  |
+|   19 | A             |    59 |      1.60 | V              |       0.98 |     +0.62  |
+|   20 | J             |    52 |      1.41 | G              |       2.01 |     -0.60  |
+|   21 | K             |    37 |      1.00 | K              |       0.77 |     +0.23  |
+|   22 | L             |    19 |      0.51 | J              |       0.15 |     +0.36  |
+|   23 | Y             |    13 |      0.35 | X              |       0.15 |     +0.20  |
+|   24 | B             |     6 |      0.16 | Q              |       0.09 |     +0.07  |
+|   25 | E             |     5 |      0.14 | Z              |       0.07 |     +0.07  |
+|   26 | M             |     5 |      0.14 |                |            |            |
+
+** Pattern Analysis
+The analysis revealed significant patterns that aided in the cryptanalysis:
+
+#+NAME: double-letters-table
+| Double Letter | Occurrences |
+|---------------+-------------|
+| WW            |          18 |
+| PP            |          15 |
+| SS            |          13 |
+| NN            |           8 |
+| VV            |           5 |
+| GG            |           4 |
+| UU            |           4 |
+| HH            |           3 |
+| II            |           2 |
+| CC            |           1 |
+| OO            |           1 |
+| QQ            |           1 |
+| RR            |           1 |
+
+#+NAME: common-digraphs-table
+| Digraph | Occurrences |
+|---------+-------------|
+| WQ      |          89 |
+| QV      |          84 |
+| TG      |          68 |
+| XG      |          64 |
+| VI      |          61 |
+| VO      |          60 |
+| PW      |          59 |
+| NG      |          51 |
+| WN      |          50 |
+| TW      |          48 |
+
+#+NAME: common-trigraphs-table
+| Trigraph | Occurrences |
+|----------+-------------|
+| WQV      |          58 |
+| TGO      |          30 |
+| XGJ      |          21 |
+| XNG      |          19 |
+| TWX      |          19 |
+| IFU      |          18 |
+| IXV      |          18 |
+| HIF      |          17 |
+| FUW      |          17 |
+| XVO      |          17 |
+
+
+The trigraph WQV appearing 58 times was particularly significant, as it strongly suggested the English word "THE", confirming the initial frequency-based mapping of V→E, W→T, and indicating Q→H.
+** Substitution Process
+Following the frequency analysis methodology, I began with the most frequent cipher letters:
+1. *First substitution*: V → E (most frequent cipher letter to most frequent English letter). The high frequency of V (11.75%) closely matched English E (12.70%)
+2. *Second substitution*: W → T. W's frequency (9.64%) approximated English T (9.06%)
+3. *Trigraph analysis*: The pattern WQV appeared 58 times, suggesting this represents "THE". This confirmed W → T and V → E, while indicating Q → H
+4. *Contextual validation*: With partial substitutions, words began forming:
+   - "WQV" became "THE" 
+   - Common patterns like "tgo" suggested T → A, G → N, O → D
+5. *Progressive refinement*: Each successful substitution revealed more patterns:
+   - X frequently appeared before G, suggesting X → I (forming "ING" endings)
+   - P's high frequency and positioning suggested P → S
+   - N's frequency matched English N, confirming N → R
+
+** Verification and Completion
+The substitution pattern that emerged was systematically verified by:
+- Checking against common English words and phrases
+- Validating digraph and trigraph frequencies
+- Ensuring linguistic coherence in the decrypted text
+
+The final substitution mapping revealed a text about cryptography and William Friedman's contributions to the field, confirming the accuracy of the frequency analysis approach.
 * Results
+The frequency analysis successfully decrypted the monoalphabetic substitution cipher, revealing the complete substitution key and plaintext.
+
+** Substitution Key
+The final mapping between plaintext and cipher alphabets:
+
+#+NAME: substitution-key-table
+#+ATTR_LATEX: :font \scriptsize
+| Plain  | A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z |
+|--------+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---|
+| Cipher | T | A | H | O | Y | E | I | Q | X | M | L | S | Z | G | W | J | P | U | R | V | D | K | F | N | B | C |
+
+** Decrypted Message
+The complete decrypted plaintext:
+
+#+INCLUDE: "../result.txt"
+
 * Conclusions
+This laboratory work successfully demonstrated the practical application of frequency analysis against monoalphabetic substitution ciphers, revealing both the power and limitations of statistical cryptanalysis.
+
+The attack proved successful against the given message. The correlation between ciphertext letter frequencies and expected English frequencies provided a good start in the initial substitutions, followed by pattern analysis of digraphs and trigraphs. The 3,694-letter ciphertext provided enough statistical data for a meaningful frequency and pattern analysis. shorter texts would likely have shown greater variance from expected frequencies.
+
+The exercise also revealed some limitations of frequency analysis:
+-  Not all cipher letters matched their expected plaintext frequencies perfectly (V, W, T to  E, T, A for example) requiring pattern & contextual analysis as assistance.
+- Computational frequency analysis alone proved insufficient without human interpretation.
+-  The effectiveness of frequency analysis depends heavily on the text content and length. Specialized vocabulary or deliberately skewed letter distributions could significantly complicate the attack.
